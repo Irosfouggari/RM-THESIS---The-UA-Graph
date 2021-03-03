@@ -13,18 +13,21 @@ AUTOMATIC MAINTENANCE OF COVID-19 RELATED KNOWLEDGE GRAPHS BASED ON LARGE-SCALE 
 
 ***STEPS THAT LEAD TO THE KG GENERATION***
 > Step 1: Data Cleaning and preprocessing. See the code snippet above. 
-Input data: All the abstracts from the Initial Dataset
-Output Data: Data_lemmatized.txt
+>Input data: All the abstracts from the Initial Dataset
+>Output Data: A version of the intitial dataset containing only english publications and the Data_lemmatized.txt
 
 
 
 >Step 2: Topic Extraction. 
-Input data: Data_lemmatized.txt from Step:1 
-Output Data: LDA model
+>Input data: Data_lemmatized.txt from Step:1 
+>Output Data: LDA model
 
 
 
->Import - Export Configuration: 
+>Step 3: Scispacy Entity extraction. 
+>Input data: Only english publications from Step:1
+>Output Data: All the available Scispacy entities: bc5cdr.csv, bionlp13cg, craft_md.csv, jnlpba.csv
+
 
 
 
