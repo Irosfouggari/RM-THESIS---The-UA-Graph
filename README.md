@@ -4,7 +4,7 @@ AUTOMATIC MAINTENANCE OF COVID-19 RELATED KNOWLEDGE GRAPHS BASED ON LARGE-SCALE 
 ## Table of Contents (Optional)
 
 - [Introduction](#Introduction)
-- [Steps](#Steps that lead to the KG generation)
+- [Steps that lead to the KG generation](#Steps that lead to the KG generation)
 - [Contributing](#contributing)
 
 
