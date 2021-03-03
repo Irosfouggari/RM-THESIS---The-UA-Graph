@@ -36,5 +36,8 @@ AUTOMATIC MAINTENANCE OF COVID-19 RELATED KNOWLEDGE GRAPHS BASED ON LARGE-SCALE 
 >Output Data: All the available Scispacy entities: bc5cdr.csv, bionlp13cg, craft_md.csv, jnlpba.csv
 
 
+>Step 3: Entity Preprocessing. All the entities should follow the pattern: Cord_uid, Entity, Class. So here we have to group all the entities based on the publication they belong to and then specify their class. Each csv file should contain only a unique class. 
+>Input data: CSV files extracted on step: 3
+>Output Data: One class entities eg. Disease, DNA, RNA, CHEBI, TAXON ...
 
 
