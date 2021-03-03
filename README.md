@@ -17,7 +17,7 @@ AUTOMATIC MAINTENANCE OF COVID-19 RELATED KNOWLEDGE GRAPHS BASED ON LARGE-SCALE 
 
 
 
-# ***STEPS THAT LEAD TO THE KG GENERATION***
+# STEPS THAT LEAD TO THE KG GENERATION
 > Step 1: Data Cleaning and preprocessing. See the `code` snippet above. 
 >Input data: All the abstracts from the Initial Dataset
 >Output Data: A version of the intitial dataset containing only english publications and the Data_lemmatized.txt
