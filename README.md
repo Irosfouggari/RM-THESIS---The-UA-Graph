@@ -11,12 +11,17 @@ AUTOMATIC MAINTENANCE OF COVID-19 RELATED KNOWLEDGE GRAPHS BASED ON LARGE-SCALE 
 
 
 
-***USER INTERFACE***
->  to do
+***STEPS THAT LEAD TO THE KG GENERATION***
+> Step 1: Data Cleaning and preprocessing. See the code snippet above. 
+Input data: All the abstracts from the Initial Dataset
+Output Data: Data_lemmatized.txt
 
 
 
->Algorithm Configuration:
+>Step 2: Topic Extraction. 
+Input data: Data_lemmatized.txt from Step:1 
+Output Data: LDA model
+
 
 
 >Import - Export Configuration: 
