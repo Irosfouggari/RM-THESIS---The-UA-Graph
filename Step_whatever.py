@@ -16,7 +16,7 @@ import glob
 from neo4j import GraphDatabase
 from py2neo import Graph
 
-graph = Graph("bolt://localhost:7687", user="neo4j", password="1111")
+#graph = Graph("bolt://localhost:7687", user="neo4j", password="1111")
 
 
 
@@ -76,7 +76,7 @@ class Topics:
         return(k)
     
 
-    def Topics_and_Keywords(self,path,Entities):
+    def Topic_Keywords(self,path,Entities):
         all_files = glob.glob(path + "/*.csv")
         li = []
         i=0
@@ -90,17 +90,30 @@ class Topics:
             topics["Intersection"]=topics["Intersection"].astype(str)
             topics['Final_Topic_Keywords'] = topics.apply(lambda x: self.Final_Topic_Keywords(x.Intersection, x.Topic), axis=1)
             topics = topics.assign(rec_id=np.arange(len(topics))).reset_index(drop=True)
-            topics['rec_id'] = str(i)+'_' + topics['rec_id'].astype(str)
+            topics['rec_id'] ='T'+str(i)+'_' + topics['rec_id'].astype(str)
             #csv_data = topics.to_csv(r'C:/Users/Iro Sfoungari/Desktop/somethinggg/new/'+str(i)+'Topic.csv', index = False)
             i=i+1
             li.append(topics)
         frame = pd.concat(li, axis=0, ignore_index=True)
         csv_data = frame.to_csv(path+'/FinalKeywordsforallTopics.csv', index = False)
-
-        return(framek)
+        return(frame)
+    
+    def Keywords_became_entities(self,path,topics):
+        result=topics[topics['Intersection']!='']
+        result=result.drop(['Topic', 'Probability', 'Entities', 'Final_Topic_Keywords'], axis = 1) 
+        splitted = result['Intersection'].str.split(',\s*')
+        s = splitted.str.len()
+        df = pd.DataFrame({'rec_id': np.repeat(result['rec_id'].values, s),
+                           'Intersection':np.concatenate(splitted.values)}, columns=['rec_id','Intersection'])
+        df1= df['Intersection'].str.split("\*", expand=True)
+        df2=pd.concat([df['rec_id'], df1], axis=1)
+        df2.columns = ['rec_id', 'Probability', 'Word']
+        csv_data = df2.to_csv(path+'/KeywordsBecameEntities.csv', index = False)
+        return(df2)
 
 First_Instace=Topics(path) 
-Something=First_Instace.Topics_and_Keywords(path,Entities)
-print(Something)
+FinalKeywordsforallTopics=First_Instace.Topic_Keywords(path,Entities)
+K=First_Instace.Keywords_became_entities(path,FinalKeywordsforallTopics)
 
 #C:\Users\Iro Sfoungari\Desktop\somethinggg
+#C:\Users\Iro Sfoungari\Desktop\THESIS DATA\FINAL_DATABASE\Topics
