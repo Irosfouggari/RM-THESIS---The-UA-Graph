@@ -16,7 +16,7 @@ import glob
 from neo4j import GraphDatabase
 from py2neo import Graph
 
-#graph = Graph("bolt://localhost:7687", user="neo4j", password="1111")
+graph = Graph("bolt://localhost:7687", user="neo4j", password="****")
 
 
 
@@ -24,14 +24,13 @@ user_input = input("Enter the folder containing all the Topic files:")
 if (os.path.exists(user_input)):
     print("Folder exists")
     path =user_input # use your path
-    #k=graph.run("MATCH (e:Entity)-[IDENTIFIED_IN]->(p:Publication) RETURN e.name, p.id").data()
-    #df = pd.DataFrame(k)
-    #print(len(df))
-    #Entities=df.groupby('p.id', sort=False).agg(', '.join).reset_index()
-    #Entities.rename(columns = {'e.name':'Entities'}, inplace = True)
-    #Entities.rename(columns = {'p.id':'id'}, inplace = True)
-    #print(Entities.head())
-    Entities = pd. read_csv("C:/Users/Iro Sfoungari/Desktop/ayeaye.csv")
+    k=graph.run("MATCH (e:Entity)-[IDENTIFIED_IN]->(p:Publication) RETURN e.name, p.id").data()
+    df = pd.DataFrame(k)
+    print(len(df))
+    Entities=df.groupby('p.id', sort=False).agg(', '.join).reset_index()
+    Entities.rename(columns = {'e.name':'Entities'}, inplace = True)
+    Entities.rename(columns = {'p.id':'id'}, inplace = True)
+    print(Entities.head())
 else:
     print("Folder does not exist, try again!")
 
@@ -115,5 +114,3 @@ First_Instace=Topics(path)
 FinalKeywordsforallTopics=First_Instace.Topic_Keywords(path,Entities)
 K=First_Instace.Keywords_became_entities(path,FinalKeywordsforallTopics)
 
-#C:\Users\Iro Sfoungari\Desktop\somethinggg
-#C:\Users\Iro Sfoungari\Desktop\THESIS DATA\FINAL_DATABASE\Topics
