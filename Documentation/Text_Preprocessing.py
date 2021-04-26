@@ -1,7 +1,9 @@
 """
 Created on Thu Apr 22 15:09:26 2021
+
 @author: Iro Sfoungari
 """
+#In case you use a different dataset rename the column containing abstract to 'abstract' and id to 'cord_uid'
 
 # Usual import
 from sys import exit
@@ -52,7 +54,7 @@ if fileName.is_file():
     print(len(data))
     fileinput2 = str(input("Please give a directory to save your results:"))
     FilePath = Path(fileinput2)
-    if path.exists(FilePath):
+    if os.path.isdir(FilePath):
         print ("Thanks")
     else: 
         print ("Directory does not exist! Try again")
@@ -118,24 +120,35 @@ class Data_Preprocessing:
 
 
 Instace=Data_Preprocessing(data)
-#Language Detection 
+#First keep in a separate csv publications with no available abstract
+data["abstract"]=data["abstract"].astype(str) 
+data_no_abstract = data[data.abstract == 'nan']
+data_no_abstract.to_csv(os.path.join(FilePath,r'Data_no_abstract.csv'))
+print('\nData without an abstract available: ',len(data_no_abstract))
+
+#1st Step: Language Detection, we keep only the English abstracts 
+data= data[data.abstract != 'nan']
 data["Lang"]=data["abstract"].apply(Instace.language_detection)
-#we keep only the english abstracts
-data=data[data['Lang'].str.contains("en")]
-print("We care only about english abstracts!")
-print(len(data))
-data_temp  = data.abstract.tolist()
-no_stopwords = list(map(Instace.spacy_stropword_rem, data_temp))
-print(no_stopwords[5])
+final_dataset=data[data['Lang'].str.contains("en")]
+print('\nData with English abstracts: ', len(data))
+
+
+#tokenization, stopword removal, cleaning unecessary characters, lemmatization
+temp=final_dataset[['cord_uid', 'abstract']]
+abstract_list= final_dataset.abstract.tolist()
+id_list=final_dataset.cord_uid.tolist()
+no_stopwords = list(map(Instace.spacy_stropword_rem, abstract_list))
+print('\nExample tokenization - stopword removal: ',no_stopwords[5])
 token_stop_clean_text = list(Instace.clean_words(no_stopwords))
 data_lemmatized = Instace.lemmatization(token_stop_clean_text)
-print(data_lemmatized[5])
-df = pd.DataFrame([data_lemmatized]).T
-df3=pd.concat([data['cord_uid'], df], axis=1)
-df3.columns = ['cord_uid', 'Lemmatized_Text']
-df3.to_csv(os.path.join(FilePath,r'Lemmatized_Text.csv'))
+print('\nExample Lemmatization: ',data_lemmatized[5])
+k=list(zip(id_list, abstract_list))
+print('\nExample Lemmatization: ',k[0])
+Lemmatized_Text = pd.DataFrame(k)
+Lemmatized_Text.columns = ['cord_uid','Abstract']
+#this csv file will be used for NER, I need the cord_uid that is why i kept it in this form
+Lemmatized_Text.to_csv(os.path.join(FilePath,r'Lemmatized_Text.csv'))
 
-#write df3 columns to csv 
 
 #bigram and trigram identification
 bigram = gensim.models.Phrases(data_lemmatized, min_count=5, threshold=100) # higher threshold fewer phrases.
@@ -145,7 +158,7 @@ trigram_mod = gensim.models.phrases.Phraser(trigram)
 
 data_words_bigrams = Instace.bigrams(data_lemmatized)
 data_words_trigrams = Instace.trigrams(data_lemmatized)
-
+#I will use these data for LDA 
 Instace.save_data(data_lemmatized)
 
 
