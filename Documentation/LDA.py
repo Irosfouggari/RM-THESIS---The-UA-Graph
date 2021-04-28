@@ -8,6 +8,8 @@ Created on Sun Apr 25 12:48:16 2021
 from pprint import pprint
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
+
 from tqdm import tqdm
 import string
 import os
@@ -40,8 +42,8 @@ if not ".txt" in fileinput:
 fileName = Path(fileinput)
 if fileName.is_file():
     print ("File exists")
-    with open(fileName, 'r',encoding='utf-8') as f:
-        data_lemmatized = [ast.literal_eval(line.strip()) for line in f]
+    with open(fileName, 'r') as f:
+        mylist = ast.literal_eval(f.read())
         fileinput2 = str(input("Please give a directory to save your results:"))
         FilePath = Path(fileinput2)
         if os.path.isdir(FilePath):
@@ -57,110 +59,94 @@ else:
 
 class LDA:
     
-    def __init__(self,data):
-        self.data=data
+    def __init__(self,mylist):
+        self.mylist=mylist
         print("hii")
-        print(len(data))
+        print(len(mylist))
 
-    def create_dict_corpus(self,data):
+    def create_dict_corpus(self,text):
          # Create Dictionary
-        id2word = corpora.Dictionary(data)
+        id2word = corpora.Dictionary(text)
         # Create Corpus
-        texts = data
+        texts = text
         # Term Document Frequency
         corpus = [id2word.doc2bow(text) for text in texts]
         # View
-        #print(corpus[:1][0][:30])
+        print(corpus[:1][0][:30])
         return id2word, corpus
 
 
-    def model(self, id2word, corpus):
+    def model(self, id2word, corpu,num_topics):
         lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                            id2word=id2word,
-                                           num_topics=2, 
+                                           num_topics=num_topics, 
                                            random_state=100,
-                                           update_every=1,
-                                           chunksize=100,
-                                           passes=10,
+                                           passes=50,
                                            alpha='auto',
                                            per_word_topics=True)
         return lda_model
     
     
-    
+    '''
     def lda_Mallet(self, id2word, corpus):
         ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=2, id2word=id2word)
         return ldamallet
-    
+    '''
        
-    def file(self):
-       fileinput2 = str(input("Please give the csv file to be preprocessed:"))
-       if not ".csv" in fileinput2:
-           fileinput2 += ".csv"
-       fileName2 = Path(fileinput2)
-       if fileName2.is_file():
-           print ("File exists")
-           data = pd.read_csv(fileName2)
-           print(len(data))
-       else: 
-        print ("This file does not exist!")
-        self.file()
-       return data
+    def file(self,corpus,lda_model,id_list):
+        lda_corpus = lda_model.get_document_topics(corpus)
+        k=[doc for doc in lda_corpus]
+        k1=list(zip(id_list, k))
+        print(k1)
+        df = DataFrame (k1,columns=['cord_uid','Topic'])
+        df['Topic'] = df['Topic'].astype(str)
+        df['Topic'] = df['Topic'].str.replace("[","").str.replace("(","").str.replace("]","").str.replace(" ","")
+        df2= df['Topic'].str.split("\),", expand=True)
+        data=pd.concat([df['cord_uid'], df2], axis=1)
+        #data.to_csv(r'C:/Users/Iro Sfoungari/Desktop/sum/blakeies.csv', index = False)
+
+        return df,data
    
-    def filee(self, data2, lda, corpus):
-        print("hiiiii")
-        doiList = data2.cord_uid.tolist()
-        corpus_transformed = lda[corpus]
-        s1=list(corpus_transformed)
-        k=list(zip(doiList, s1))
-        print(doiList)
-        print(s1)
-        #df = DataFrame (k,columns=['cord_uid','Topic'])
-        #print(k)
-        #print(len(df))
-        #csv_data = df.to_csv(r'C:/Users/Iro Sfoungari/Desktop/255_cols.csv', index = False)
-
-        #df['Topic'] = df['Topic'].astype(str)
-        #df['Topic'] = df['Topic'].str.replace("[","")
-        #df['Topic'] = df['Topic'].str.replace("(","")
-        #df['Topic'] = df['Topic'].str.replace("]","")
-        #df['Topic'] = df['Topic'].str.replace(" ","")
-
-        #df2= df['Topic'].str.split("\),", expand=True)
-        #df2.head(10)
-        #data2=pd.concat([df['cord_uid'], df2], axis=1)
-        #print(data2.head(10))
-        return k
-       
+    def something(self,data,df,lda_model):
+        for x in range(len(data.columns)-1):
+            Datas_First_Topic = data[['cord_uid', x]]
+            Datas_First_Topic= Datas_First_Topic[x].str.split(",", expand=True)
+            Datas_First_Topic=pd.concat([df['cord_uid'], Datas_First_Topic], axis=1)
+            Datas_First_Topic.columns = ['cord_uid', 'Topic', 'Probability']
+            Datas_First_Topic['Probability'] = Datas_First_Topic['Probability'].str.replace(")","")
+            new_df = Datas_First_Topic[Datas_First_Topic["Topic"].str.contains('None') == False]
+            for index, row in new_df.iterrows():
+                row['Topic']=lda_model.print_topic(int(row['Topic']))
+            new_df['Topic']=new_df['Topic'].str.replace('"','')
+            new_df['Topic']=new_df['Topic'].str.replace(" ","")
+            new_df['Topic']=new_df['Topic'].str.replace("+",", ")
+            #new_df["Topic"]=new_df["Topic"].str.replace(", ", ",")
+            new_df.to_csv(r'C:/Users/Iro Sfoungari/Desktop/sum/'+str(x)+'_Topic.csv', index = False)
 
 
 
 
-First_Instace=LDA(data_lemmatized) 
-data=data_lemmatized
-id2word, corpus= First_Instace.create_dict_corpus(data_lemmatized)
-print("it works")
-#print(corpus[:1][0][:30])
-lda_model=First_Instace.model(id2word, corpus)
-#pprint(lda_model.print_topics())
+
+First_Instace=LDA(mylist)
+Lemmatized_Text = DataFrame (mylist,columns=['cord_uid','Topic'])
+#print(Lemmatized_Text.head())
+id_list=Lemmatized_Text.cord_uid.tolist()
+id2word, corpus= First_Instace.create_dict_corpus(Lemmatized_Text['Topic'])
 
 
-#lda_mallet=First_Instace.model(dictionary, corpus)
-#print('\nLDA MALLET: ', lda_mallet.show_topics(formatted=False))
-#print("telikoooooo")
-#optimal_model = model_list_mallet[9]
-#model_topics = lda_mallet.show_topics(formatted=False)
-#pprint(lda_mallet.print_topics(num_words=40))
+k=3
+
+lda_model=First_Instace.model(id2word, corpus,k)
+print(lda_model.print_topics(num_topics=k))
+
+df,datadata=First_Instace.file(corpus,lda_model,id_list)
+#datadata.T
+print(datadata.head(5))
+
+lenaki=len(datadata)
+
+somehting_new=First_Instace.something(datadata,df,lda_model)
 
 
 
-data=First_Instace.file()
-#print(data.head(5))
-
-data2=First_Instace.filee(data,lda_model,corpus)
-#print(len(data2.columns))
-var1= lda_model.num_topics
-print(var1)
-
-
-#C:\Users\Iro Sfoungari\Desktop\sum\Data_lemmatized.txt
+#C:\Users\Iro Sfoungari\Desktop\sum\all_data_lemmatized.txt
