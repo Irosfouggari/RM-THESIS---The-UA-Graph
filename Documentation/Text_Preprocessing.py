@@ -1,18 +1,19 @@
 """
 Created on Thu Apr 22 15:09:26 2021
-
 @author: Iro Sfoungari
 """
 #In case you use a different dataset rename the column containing abstract to 'abstract' and id to 'cord_uid'
 
 # Usual import
-from sys import exit
-from pathlib import Path
-from os import path
 import numpy as np
 import pandas as pd
 import string
 import os.path
+from sys import exit
+from pathlib import Path
+from pandas import DataFrame
+from os import path
+
 
 # Gensim
 import gensim
@@ -112,11 +113,9 @@ class Data_Preprocessing:
     
     
  
-    def save_data(self,data_lemmatized):
-       with open(os.path.join(FilePath,'Data_lemmatized.txt'), "w+", encoding="utf-8") as f:
-           for item in data_lemmatized:
-               f.write("%s\n" % item)
-
+    def save_data(self,k1):
+       with open(os.path.join(FilePath,'Text_for_TE.txt'), "w+", encoding="utf-8") as f:
+           f.write(repr(k1))
 
 
 Instace=Data_Preprocessing(data)
@@ -124,7 +123,7 @@ Instace=Data_Preprocessing(data)
 data["abstract"]=data["abstract"].astype(str) 
 data_no_abstract = data[data.abstract == 'nan']
 data_no_abstract.to_csv(os.path.join(FilePath,r'Data_no_abstract.csv'))
-print('\nData without an abstract available: ',len(data_no_abstract))
+print('\nData without an abstract: ',len(data_no_abstract))
 
 #1st Step: Language Detection, we keep only the English abstracts 
 data= data[data.abstract != 'nan']
@@ -142,12 +141,14 @@ print('\nExample tokenization - stopword removal: ',no_stopwords[5])
 token_stop_clean_text = list(Instace.clean_words(no_stopwords))
 data_lemmatized = Instace.lemmatization(token_stop_clean_text)
 print('\nExample Lemmatization: ',data_lemmatized[5])
-k=list(zip(id_list, abstract_list))
+k=list(zip(id_list, data_lemmatized))
 print('\nExample Lemmatization: ',k[0])
 Lemmatized_Text = pd.DataFrame(k)
 Lemmatized_Text.columns = ['cord_uid','Abstract']
 #this csv file will be used for NER, I need the cord_uid that is why i kept it in this form
-Lemmatized_Text.to_csv(os.path.join(FilePath,r'Lemmatized_Text.csv'))
+Lemmatized_Text['Tokenized_Text'] = Lemmatized_Text['Abstract'].apply(lambda x: ' '.join(map(str, x)))
+del Lemmatized_Text['Abstract']
+Lemmatized_Text.to_csv(os.path.join(FilePath,r'Text_for_NER.csv'))
 
 
 #bigram and trigram identification
@@ -158,8 +159,9 @@ trigram_mod = gensim.models.phrases.Phraser(trigram)
 
 data_words_bigrams = Instace.bigrams(data_lemmatized)
 data_words_trigrams = Instace.trigrams(data_lemmatized)
-#I will use these data for LDA 
-Instace.save_data(data_lemmatized)
+#I will use these data for LDA: I keep it in a list [id, text] 
+k1=list(zip(id_list, data_words_trigrams))
+Instace.save_data(k1)
 
 
 #C:\Users\Iro Sfoungari\Desktop\data2.csv
