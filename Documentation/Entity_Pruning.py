@@ -43,18 +43,25 @@ class Data_Preprocessing:
     
     def __init__(self,data):
         self.data=data
-        print("hii")
         data_length=len(data)
         print(data_length)
         
+    def ask_entity_type(self):
+        entity = str(input("Which Entity Class do you want to extract? : ")).upper()
+        if entity == "":
+            exit()
+        else:
+            print(entity)
+        return entity
+    
     def create_csv(self,data,entity):
-        print("hi!")
         df=data[data['Class'].str.contains(entity)]
         len(df)
+        if (len(df)==0):
+                print("This Entity category does not exist!")
         data2=df.groupby('cord_uid', sort=False).Entity.unique().agg(', '.join).reset_index()
         data2.head(5)
         data2['Class'] = entity
-        print(data2.head(5))
         return data2
 
 
@@ -62,13 +69,14 @@ class Data_Preprocessing:
         
 
 Instance=Data_Preprocessing(data)
-#First keep in a separate csv publications with no available abstract
-#data["abstract"]=data["abstract"].astype(str) 
-#data_no_abstract = data[data.abstract == 'nan']
-entity = str(input("Which Entity Class do you want to extract? : "))
-print(entity)
+entity=Instance.ask_entity_type() 
 data2=Instance.create_csv(data,entity) 
 print(data2.head(5))
-data2.to_csv(path1 + entity +'_Entities.csv', index = False)
+if (len(data2!=0)):
+    data2['Entity'] = data2['Entity'].str.strip()
+    data2.Entity = data2.Entity.replace('\s+', ' ', regex=True)
+    data2.to_csv(path1 + entity +'_Entities.csv', index = False)
+else: 
+    exit()
 
 #C:/Users/Iro Sfoungari/Desktop/sum/Entities/bc5cdr_md.csv
