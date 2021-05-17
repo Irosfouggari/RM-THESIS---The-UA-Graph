@@ -12,6 +12,9 @@ from os import path
 import numpy as np
 import string
 import os.path
+import warnings
+warnings.filterwarnings("ignore")
+
 #Core models
 import en_core_sci_sm
 
@@ -46,11 +49,18 @@ if fileName.is_file():
     print ("File exists")
     data = pd.read_csv(fileName)
     print(len(data))
-    data=data[0:10]
     fileinput2 = str(input("Please give a directory to save your results:"))
     FilePath = Path(fileinput2)
     if os.path.isdir(FilePath):
         print ("Thanks")
+        path = str(FilePath) + str('/Entities/')
+        path1 = Path(path)
+        try:
+            path1.mkdir(parents=True, exist_ok=False)
+        except FileExistsError:
+            print("Folder is already there")
+        else:
+            print("Folder was created")
     else: 
         print ("Directory does not exist! Try again")
         exit()
@@ -59,14 +69,14 @@ else:
     print ("This file does not exist!")
     exit()
 
-    
-    
+
+
 class NER:
-    
+        
     def __init__(self,data):
         self.data=data
         print(len(data))
-   
+  
     def extract_entities_craft_md(self,abstractList, doiList):
         i = 0
         table= {"cord_uid":[], "Entity":[], "Class":[]}
@@ -128,7 +138,6 @@ class NER:
             i +=1
         return table
     
-    
     def extract_entities_stanza_i2b2(self,text):
         a_list = []
         doc = nlp(text)
@@ -140,41 +149,41 @@ class NER:
 
 #Read in file
 Instace=NER(data) 
-df = data.dropna(subset=['Abstract'])
+df = data.dropna(subset=['Tokenized_Text'])
 
 #Create disease craft table 
 doiList = df['cord_uid'].tolist()
-abstractList = df['Abstract'].tolist()
+abstractList = df['Tokenized_Text'].tolist()
+
 table = Instace.extract_entities_craft_md(abstractList, doiList)
 final_df = pd.DataFrame(table)
-final_df.to_csv(os.path.join(FilePath,r'craft_md.csv'))
+final_df.to_csv(os.path.join(path1,r'craft_md.csv'))
 
 #create bc5cdr  table (DISEASE)
 table1 = Instace.extract_entities_bc5cdr_md(abstractList, doiList)
 final_df1 = pd.DataFrame(table1)
-final_df1.to_csv(os.path.join(FilePath,r'bc5cdr_md.csv'))
+final_df1.to_csv(os.path.join(path1,r'bc5cdr_md.csv'))
 
 
 #create bionlp13cg  table 
 table2 = Instace.extract_entities_bionlp13cg(abstractList, doiList)
 final_df2 = pd.DataFrame(table2)
-final_df2.to_csv(os.path.join(FilePath,r'bionlp13cg.csv'))
+final_df2.to_csv(os.path.join(path1,r'bionlp13cg.csv'))
 
 #create jnlpba  table 
 table3 = Instace.extract_entities_jnlpba(abstractList, doiList)
 final_df3 = pd.DataFrame(table3)
-final_df3.to_csv(os.path.join(FilePath,r'jnlpba.csv'))
+final_df3.to_csv(os.path.join(path1,r'jnlpba.csv'))
 
 #create med7  table 
 table4= Instace.extract_entities_med7(abstractList, doiList)
 final_df4 = pd.DataFrame(table4)
-final_df4.to_csv(os.path.join(FilePath,r'med7.csv'))
+final_df4.to_csv(os.path.join(path1,r'med7.csv'))
 
 
 #for stanza
-data["Abstract"]=data["Abstract"].astype(str) 
-data=data[0:10]
-data["entities"] = data["Abstract"].apply(Instace.extract_entities_stanza_i2b2)
+data["Tokenized_Text"]=data["Tokenized_Text"].astype(str) 
+data["entities"] = data["Tokenized_Text"].apply(Instace.extract_entities_stanza_i2b2)
 df1 = (data.assign(category = data['entities'].str.split(','))
          .explode('entities')
          .reset_index(drop=True))
@@ -184,7 +193,7 @@ df1["entities"]=df1["entities"].str.replace(")", "").str.replace("'", "").str.re
 #df2= df1['Intersection'].str.split("\*", expand=True)
 df2= df1['entities'].str.split(",", expand=True)
 df3=pd.concat([df1['cord_uid'], df2], axis=1)
+df3.columns = ['cord_uid', 'Entity', 'Class']
 print(df3.head())
-df3.to_csv(os.path.join(FilePath,r'stanza_i2b2.csv'))
+df3.to_csv(os.path.join(path1,r'stanza_i2b2.csv'))
 
-#C:/Users/Iro Sfoungari/Desktop/sum/Lemmatized_Text.csv
