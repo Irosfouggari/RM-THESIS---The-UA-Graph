@@ -2,6 +2,8 @@ CREATE CONSTRAINT ON (sd:Sci_Domain) ASSERT sd.id IS UNIQUE;
 CREATE CONSTRAINT ON (jas:Articles) ASSERT jas.id IS UNIQUE;
 CREATE CONSTRAINT ON (journals:Journals) ASSERT journals.id IS UNIQUE;
 CREATE CONSTRAINT ON (authors:Authors) ASSERT authors.name IS UNIQUE;
+CREATE CONSTRAINT ON (bc:Biomedical_Concepts) ASSERT bc.name IS UNIQUE;
+CREATE CONSTRAINT ON (t:Topics) ASSERT t.tid IS UNIQUE;
 
 
 
@@ -40,8 +42,9 @@ CREATE (pro)-[:isA]->(ser)
 
 
 //create article label nodes
-:auto using periodic commit
-load csv with headers from 'file:///data.csv' as line
+:auto using periodic commit 10000
+load csv with headers from 'file:///Data_no_abstract.csv' as line
+with line where line.journal is not null
 match (ja:Sci_Domain { name: "Journal_Article", id: "Journal_ArticleId" })
 match (j:Sci_Domain { name: "Journal", id: "JournalId" })
 merge (js:Journals {name: line.journal})
@@ -54,8 +57,9 @@ MERGE (a)-[:In]->(js)
 merge (a)-[:instanceOf]->(ja)
 merge (js)-[:instanceOf]->(j)
 
+
 :auto using periodic commit
-load csv with headers from 'file:///data.csv' as line
+load csv with headers from 'file:///Data_no_abstract.csv' as line
 merge (articles:Articles {id: line.cord_uid})
 on create set
     articles.title =line.title,
@@ -68,18 +72,22 @@ FOREACH (f in authors |merge (author:Authors {name: f}) merge (author)-[:instanc
 
 
 
+
+
 //create  entities and relationship with publication
 :auto using periodic commit
-load csv with headers from 'file:///Entities/DISEASE_Entities.csv' as line
+load csv with headers from 'file:///Entities/jnlpba/CELL_TYPE_Entities.csv' as line
 match (bc:Sci_Domain { name: "Biomedical_Concept",  identifier: "Biomedical_ConceptId" })
 merge (articles:Articles {id: line.cord_uid})
-merge (disease:Sci_Domain { name: "Disease", id: "DiseaseId" })
+merge (disease:Sci_Domain { name: "Cell_type", id: "Cell_typeId" })
 merge (disease)-[:isA]->(bc)
 WITH articles,line,split(line.Entity, ',') AS entities
-match (disease:Sci_Domain { name: "Disease", id: "DiseaseId" })
-foreach (f in entities |merge (entity:Entity {name: f}) merge (entity)-[:IdentifiedIn]->(articles))
-foreach (f in entities |merge (entity:Entity {name: f}) merge (entity)-[:instanceOf]->(disease))
-return count(entity)
+match (disease:Sci_Domain { name: "Cell_type", id: "Cell_typeId" })
+foreach (f in entities |merge (entity:Biomedical_Concepts {name: f}) merge (articles)-[:refers]->(entity))
+foreach (f in entities |merge (entity:Biomedical_Concepts {name: f}) merge (entity)-[:instanceOf]->(disease))
+return count(entities)
+
+
 
 
 :auto using periodic commit
