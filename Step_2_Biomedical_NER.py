@@ -150,6 +150,7 @@ class NER:
 
 #Read in file
 Instace=NER(data) 
+data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 df = data.dropna(subset=['Tokenized_Text'])
 
 #Create disease craft table 
@@ -158,35 +159,46 @@ abstractList = df['Tokenized_Text'].tolist()
 
 table = Instace.extract_entities_craft_md(abstractList, doiList)
 final_df = pd.DataFrame(table)
-final_df.to_csv(os.path.join(path1,r'craft_md.csv'))
+final_df.to_csv(os.path.join(path1,r'craft_md.csv'), index = False)
 
 #create bc5cdr  table (DISEASE)
 table1 = Instace.extract_entities_bc5cdr_md(abstractList, doiList)
 final_df1 = pd.DataFrame(table1)
-final_df1.to_csv(os.path.join(path1,r'bc5cdr_md.csv'))
+final_df1.to_csv(os.path.join(path1,r'bc5cdr_md.csv'), index = False)
 
 
 #create bionlp13cg  table 
 table2 = Instace.extract_entities_bionlp13cg(abstractList, doiList)
 final_df2 = pd.DataFrame(table2)
-final_df2.to_csv(os.path.join(path1,r'bionlp13cg.csv'))
+final_df2.to_csv(os.path.join(path1,r'bionlp13cg.csv'), index = False)
 
 #create jnlpba  table 
 table3 = Instace.extract_entities_jnlpba(abstractList, doiList)
 final_df3 = pd.DataFrame(table3)
-final_df3.to_csv(os.path.join(path1,r'jnlpba.csv'))
+final_df3.to_csv(os.path.join(path1,r'jnlpba.csv'), index = False)
 
 #create med7  table 
 table4= Instace.extract_entities_med7(abstractList, doiList)
 final_df4 = pd.DataFrame(table4)
-final_df4.to_csv(os.path.join(path1,r'med7.csv'))
+final_df4.to_csv(os.path.join(path1,r'med7.csv'), index = False)
 
 
 #for stanza
 data["Tokenized_Text"]=data["Tokenized_Text"].astype(str) 
-data=data[0:10]
-data["entities"] = data["Tokenized_Text"].apply(Instace.extract_entities_stanza_i2b2)
-df1 = (data.assign(category = data['entities'].str.split(','))
+n=100
+list_df = [data[i:i+n] for i in range(0,data.shape[0],n)]
+appended_data = []
+for x in range(len(list_df)):
+    data_tmp=list_df[x]
+    data_tmp["entities"] = data_tmp["Tokenized_Text"].apply(Instace.extract_entities_stanza_i2b2)
+    print(data_tmp.head())
+    appended_data.append(data_tmp)
+    appended_data1 = pd.concat(appended_data)
+
+appended_data = pd.concat(appended_data)
+data2 = appended_data1[['cord_uid', 'entities']]
+
+df1 = (data2.assign(category = data2['entities'].str.split(','))
          .explode('entities')
          .reset_index(drop=True))
 del df1['category']
@@ -194,8 +206,10 @@ df1["entities"]=df1["entities"].astype(str)
 df1["entities"]=df1["entities"].str.replace(")", "").str.replace("'", "").str.replace("(", "")
 #df2= df1['Intersection'].str.split("\*", expand=True)
 df2= df1['entities'].str.split(",", expand=True)
-df3=pd.concat([df1['cord_uid'], df2], axis=1)
-print(df3.head())
-df3.to_csv(os.path.join(path1,r'stanza_i2b2.csv'))
+final_df5=pd.concat([df1['cord_uid'], df2], axis=1)
+final_df5.columns = ['cord_uid', 'Entity', 'Class']
+print(final_df5.head())
+final_df5.to_csv(os.path.join(path1,r'stanza.csv'), index = False)
 
-#C:/Users/Iro Sfoungari/Desktop/sum/Text_for_NER.csv
+
+
