@@ -26,23 +26,30 @@ from gensim.corpora.dictionary import Dictionary
 from gensim.utils import simple_preprocess
 
 #LDA Mallet
-from gensim.models.wrappers import LdaMallet
+#from gensim.models.wrappers import LdaMallet
 
 #os.environ.update({'MALLET_HOME':r'C:/new_mallet/mallet-2.0.8/'})
 #mallet_path = r'C:/new_mallet/mallet-2.0.8/bin/mallet.bat'
 
 
-fileinput = str(input("Please give the txt file:"))
+fileinput = str(input("Please give the .txt (Text_for_TE.txt) file extracted from Phase 1:"))
 if not ".txt" in fileinput:
   fileinput += ".txt"
-    
 
 
 fileName = Path(fileinput)
 if fileName.is_file():
     print ("File exists")
-    with open(fileName, 'r') as f:
-        text_list = ast.literal_eval(f.read())
+    with open(fileName, 'r', encoding='utf-8') as f:
+        #text_list = ast.literal_eval(f.read())
+        text_list = [ast.literal_eval(line.strip()) for line in f]
+        fileinput_id= str(input("Please give the file with English abstracts (English_abstracts.csv) extracted from Phase 1:"))
+        fileName_id = Path(fileinput_id)
+        if fileName_id.is_file():
+            print ("File exists")
+            data_list = pd.read_csv(fileName_id)
+            data_list = data_list.loc[:, ~data_list.columns.str.contains('^Unnamed')]
+            print(len(data_list))
         fileinput2 = str(input("Please give a directory to save your results:"))
         FilePath = Path(fileinput2)
         path=str(FilePath)
@@ -104,12 +111,7 @@ class LDA:
         return lda_model
     
     
-    '''
-    def lda_Mallet(self, id2word, corpus):
-        ldamallet = gensim.models.wrappers.LdaMallet(mallet_path, corpus=corpus, num_topics=2, id2word=id2word)
-        return ldamallet
-    '''
-       
+
     def articles_to_topics(self,corpus,lda_model,id_list):
         lda_corpus = lda_model.get_document_topics(corpus)
         k=[doc for doc in lda_corpus]
@@ -145,7 +147,18 @@ class LDA:
 
 
 Instace=LDA(text_list)
-Lemmatized_Text = DataFrame (text_list,columns=['cord_uid','Topic'])
+print(len(data_list))
+temp=data_list[['cord_uid', 'abstract']]
+id_list=data_list.cord_uid.tolist()
+
+k1=list(zip(id_list, text_list))
+Lemmatized_Text = pd.DataFrame(k1)
+print(Lemmatized_Text.head())
+
+Lemmatized_Text.columns = ['cord_uid', 'Topic']
+#Lemmatized_Text = DataFrame (Lemmatized_Text,columns=['cord_uid','Topic'])
+print(Lemmatized_Text.head())
+print(len(Lemmatized_Text))
 id_list=Lemmatized_Text.cord_uid.tolist()
 id2word, corpus= Instace.create_dict_corpus(Lemmatized_Text['Topic'])
 
@@ -157,7 +170,3 @@ df,data=Instace.articles_to_topics(corpus,lda_model,id_list)
 print(data.head(5))
 
 Instace.Topics_per_doc(data,df,lda_model)
-
-
-
-#C:\Users\Iro Sfoungari\Desktop\sum\Text_for_TE.txt
