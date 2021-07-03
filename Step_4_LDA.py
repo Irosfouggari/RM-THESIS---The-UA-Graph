@@ -170,3 +170,7 @@ df,data=Instace.articles_to_topics(corpus,lda_model,id_list)
 print(data.head(5))
 
 Instace.Topics_per_doc(data,df,lda_model)
+
+#sources
+#https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/
+#https://www.kaggle.com/thebrownviking20/topic-modelling-with-spacy-and-scikit-learn#
