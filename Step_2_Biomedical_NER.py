@@ -212,4 +212,7 @@ print(final_df5.head())
 final_df5.to_csv(os.path.join(path1,r'stanza.csv'), index = False)
 
 
-
+#sources
+#https://stanfordnlp.github.io/stanza/ner.html
+#https://allenai.github.io/scispacy/
+#https://towardsdatascience.com/using-scispacy-for-named-entity-recognition-785389e7918d
