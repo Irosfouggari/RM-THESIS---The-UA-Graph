@@ -14,7 +14,7 @@ import glob
 from neo4j import GraphDatabase
 from py2neo import Graph
 
-graph = Graph("bolt://localhost:7687", user="neo4j", password="1111")
+graph = Graph("bolt://localhost:11006", user="neo4j", password="1111")
 
 
 
@@ -22,12 +22,12 @@ user_input = input("Enter the folder containing all the Topic files:")
 if (os.path.exists(user_input)):
     print("Folder exists")
     path =user_input # use your path
-    k=graph.run("MATCH (e:Entity)-[IDENTIFIED_IN]->(p:Publication) RETURN e.name, p.id").data()
+    k=graph.run("MATCH (a:Articles)-[refers]->(bc:Biomedical_Concepts) RETURN bc.name, a.id").data()
     df = pd.DataFrame(k)
     print(len(df))
-    Entities=df.groupby('p.id', sort=False).agg(', '.join).reset_index()
-    Entities.rename(columns = {'e.name':'Entities'}, inplace = True)
-    Entities.rename(columns = {'p.id':'id'}, inplace = True)
+    Entities=df.groupby('a.id', sort=False).agg(', '.join).reset_index()
+    Entities.rename(columns = {'bc.name':'Entities'}, inplace = True)
+    Entities.rename(columns = {'a.id':'id'}, inplace = True)
     print(Entities.head())
 else:
     print("Folder does not exist, try again!")
@@ -40,7 +40,6 @@ class Topics:
     
     def __init__(self,path):
         self.path=path
-        print("hii")
  
     from re import search
 
@@ -88,7 +87,6 @@ class Topics:
             topics['Final_Topic_Keywords'] = topics.apply(lambda x: self.Final_Topic_Keywords(x.Intersection, x.Topic), axis=1)
             topics = topics.assign(rec_id=np.arange(len(topics))).reset_index(drop=True)
             topics['rec_id'] ='T'+str(i)+'_' + topics['rec_id'].astype(str)
-            #csv_data = topics.to_csv(r'C:/Users/Iro Sfoungari/Desktop/somethinggg/new/'+str(i)+'Topic.csv', index = False)
             i=i+1
             li.append(topics)
         frame = pd.concat(li, axis=0, ignore_index=True)
@@ -113,4 +111,3 @@ FinalKeywordsforallTopics=First_Instace.Topic_Keywords(path,Entities)
 K=First_Instace.Keywords_became_entities(path,FinalKeywordsforallTopics)
 
 
-#C:\Users\Iro Sfoungari\Desktop\sum\Topics
