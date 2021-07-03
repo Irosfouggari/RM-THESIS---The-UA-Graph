@@ -62,13 +62,9 @@ class Data_Preprocessing:
         
 
 Instance=Data_Preprocessing(data)
-#First keep in a separate csv publications with no available abstract
-#data["abstract"]=data["abstract"].astype(str) 
-#data_no_abstract = data[data.abstract == 'nan']
 entity = str(input("Which Entity Class do you want to extract? : "))
 print(entity)
 data2=Instance.create_csv(data,entity) 
 print(data2.head(5))
 data2.to_csv(path1 + entity +'_Entities.csv', index = False)
 
-#C:/Users/Iro Sfoungari/Desktop/sum/Entities/bc5cdr_md.csv
