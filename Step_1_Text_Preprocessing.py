@@ -113,12 +113,15 @@ class Data_Preprocessing:
     
     
  
-    def save_data(self,k1):
+    def save_data(self,text):
        with open(os.path.join(FilePath,'Text_for_TE.txt'), "w+", encoding="utf-8") as f:
-           f.write(repr(k1))
+           for item in text:
+               f.write("%s\n" % item)
+          
 
 
 Instace=Data_Preprocessing(data)
+data=data[0:100]
 #First keep in a separate csv publications with no available abstract
 data["abstract"]=data["abstract"].astype(str) 
 data_no_abstract = data[data.abstract == 'nan']
@@ -160,8 +163,6 @@ trigram_mod = gensim.models.phrases.Phraser(trigram)
 data_words_bigrams = Instace.bigrams(data_lemmatized)
 data_words_trigrams = Instace.trigrams(data_lemmatized)
 #I will use these data for LDA: I keep it in a list [id, text] 
-k1=list(zip(id_list, data_words_trigrams))
-Instace.save_data(k1)
+Instace.save_data(data_words_trigrams)
 
 
-#C:\Users\Iro Sfoungari\Desktop\data2.csv
