@@ -29,5 +29,6 @@ The production of the UA-Graph is based on the design of a flexible data model a
 - KG Population  
 
 ### Data Processing
+![code_to_graph](https://user-images.githubusercontent.com/18035161/124457430-17d61c80-dd8c-11eb-93c5-2886508485ba.jpg)
 
 
