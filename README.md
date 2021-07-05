@@ -5,7 +5,7 @@ AUTOMATIC MAINTENANCE OF COVID-19 RELATED KNOWLEDGE GRAPHS BASED ON LARGE-SCALE 
 
 - [Motivation](#Motivation)
 - [Contribution](#Contributions)
-- [Contributing](#contributing)
+- [Production](#Production)
 
 
 # Motivation
@@ -25,12 +25,8 @@ In order to evaluate both our methodology and the produced KG, we used the COVID
 
 
 
-# Process
-# Steps that lead to the KG generation
-> Step 1: Data Cleaning and preprocessing. See the `code` snippet above. 
->Input data: All the abstracts from the Initial Dataset
->Output Data: A version of the intitial dataset containing only english publications and the Data_lemmatized.txt
-
+# UA-Graph Production 
+The production of the UA-Graph is based on the design of a flexible data model and then on the KG implementation. Therefore we discuss three aspects related to the UA-Graph production process
 
 
 >Step 2: Topic Extraction. 
