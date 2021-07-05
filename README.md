@@ -26,9 +26,9 @@ In order to evaluate both our methodology and the produced KG, we used the COVID
 # Production 
 The production of the UA-Graph is based on the design of a flexible data model and then on the KG implementation. There are four aspects related to the UA-Graph production process. 
 
--Model Design
--Model Implementation in Neo4j 
--Data Collection and Processing
--KG Population  
+- Model Design
+- Model Implementation in Neo4j 
+- Data Collection and Processing
+- KG Population  
 
 
