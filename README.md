@@ -23,25 +23,12 @@ Our main contribution is the production of the UA-Graph, which is a scientific K
 In order to evaluate both our methodology and the produced KG, we used the COVID-19 Open Research Dataset (CORD-19). 
 > 
 
-
-
 # Production 
-The production of the UA-Graph is based on the design of a flexible data model and then on the KG implementation. Therefore we discuss three aspects related to the UA-Graph production process
+The production of the UA-Graph is based on the design of a flexible data model and then on the KG implementation. There are four aspects related to the UA-Graph production process. 
 
-
->Step 2: Topic Extraction. 
->Input data: Data_lemmatized.txt from Step:1 
->Output Data: LDA model
-
-
-
->Step 3: Scispacy Entity extraction. 
->Input data: Only english publications from Step:1
->Output Data: All the available Scispacy entities: bc5cdr.csv, bionlp13cg, craft_md.csv, jnlpba.csv
-
-
->Step 3: Entity Preprocessing. All the entities should follow the pattern: Cord_uid, Entity, Class. So here we have to group all the entities based on the publication they belong to and then specify their class. Each csv file should contain only a unique class. 
->Input data: CSV files extracted on step: 3
->Output Data: One class entities eg. Disease, DNA, RNA, CHEBI, TAXON ...
+-Model Design
+-Model Implementation in Neo4j 
+-Data Collection and Processing
+-KG Population  
 
 
