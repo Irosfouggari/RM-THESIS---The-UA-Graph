@@ -14,13 +14,17 @@ import glob
 from neo4j import GraphDatabase
 from py2neo import Graph
 
-graph = Graph("bolt://localhost:11006", user="neo4j", password="1111")
+
+
+graph = Graph(".....", name=".....", user="......", password=".....")
+
 
 
 
 user_input = input("Enter the folder containing all the Topic files:")
 if (os.path.exists(user_input)):
     print("Folder exists")
+    print("hi")
     path =user_input # use your path
     k=graph.run("MATCH (a:Articles)-[refers]->(bc:Biomedical_Concepts) RETURN bc.name, a.id").data()
     df = pd.DataFrame(k)
