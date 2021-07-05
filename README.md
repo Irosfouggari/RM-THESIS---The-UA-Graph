@@ -28,6 +28,5 @@ The production of the UA-Graph is based on the design of a flexible data model a
 - Data Collection and Processing
 - KG Population  
 
-This is an <h6> tag
-
+## Model Design
 
