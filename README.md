@@ -17,8 +17,6 @@ Main contribution: the production of the UA-Graph, which is a scientific KG that
 - Additionally, we design the UA-data model, a flexible and interoperable data model. The proposed model is domain-independent and consists of classes, instances and relationships between them. Moreover, the model allows class hierarchies and inheritance.
 - Finally, we implement the UA-data model in Neo4j, which is a graph DBMS and finally produce the UA-Graph a scientific and hierarchical KG. In addition, we present a methodology that allows querying this graph top-down. 
 
-In order to evaluate both our methodology and the produced KG, we used the COVID-19 Open Research Dataset (CORD-19). 
-> 
 
 # Production 
 The production of the UA-Graph is based on the design of a flexible data model and then on the KG implementation. There are four aspects related to the UA-Graph production process. 
