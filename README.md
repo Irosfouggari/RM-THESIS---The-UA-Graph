@@ -25,7 +25,7 @@ In order to evaluate both our methodology and the produced KG, we used the COVID
 
 
 
-# UA-Graph Production 
+# Production 
 The production of the UA-Graph is based on the design of a flexible data model and then on the KG implementation. Therefore we discuss three aspects related to the UA-Graph production process
 
 
