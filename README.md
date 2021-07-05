@@ -25,8 +25,9 @@ The production of the UA-Graph is based on the design of a flexible data model a
 
 - Model Design
 - Model Implementation in Neo4j 
-- Data Collection and Processing
+- Data Processing
 - KG Population  
 
-## Model Design
+### Data Processing
+
 
