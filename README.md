@@ -28,7 +28,7 @@ The production of the UA-Graph is based on the design of a flexible data model a
 
 ### Data Processing
 We, propose a methodology which applies NLP and Information extraction techniques in order to extract structured information from text. 
-The proposed methodology consists of 3 individual steps: <br\>
+The proposed methodology consists of 3 individual steps: 
 - Text preprocessing
 - NER 
 - Topic Extraction
